@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="col-md-6 col-md-offset-3">
+  <form class="form" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {% for field in form %}
+    <div class="form-group">
+      {% if field.field.required %}*{% endif %}{{ field.label_tag }}
+      {{ field|add_class:"form-control" }}
+      {{ field.errors }}
+    </div>
+    {% endfor %}
+    {{ form.non_field_errors }}
+    <button type="submit" class="btn btn-primary">
+      {% if object %}
+      Save
+      {% else %}
+      Create
+      {% endif %}
+    </button>
+  </form>
+</div>
+{% endblock %}
