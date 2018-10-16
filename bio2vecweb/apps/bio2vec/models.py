@@ -4,7 +4,7 @@ from django.contrib.postgres.fields import ArrayField, JSONField
 from django.utils import timezone
 
 def dataset_directory_path(instance, filename):
-    return 'id{0:06d}/'.format(instance.created_by.pk)
+    return 'id{0:06d}/{1}'.format(instance.created_by.pk, filename)
 
 class Dataset(models.Model):
 
@@ -39,6 +39,10 @@ class Dataset(models.Model):
 
     def __str__(self):
         return self.name
+
+    @property
+    def index_name(self):
+        return 'dataset_' + str(self.pk)
 
 
 class Entity(models.Model):

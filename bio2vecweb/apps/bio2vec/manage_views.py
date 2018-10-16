@@ -37,3 +37,7 @@ class DatasetUpdateView(FormRequestMixin, UpdateView):
     model = Dataset
     form_class = DatasetForm
     template_name = 'bio2vec/manage/edit_dataset.html'
+
+    def get_success_url(self):
+        kwargs = {'pk': self.object.pk}
+        return reverse('edit_dataset', kwargs=kwargs)
