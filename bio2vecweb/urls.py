@@ -23,6 +23,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('bio2vec/', include('bio2vec.urls')),
     path('accounts/', include('accounts.urls')),
+    path('partners/', include('partners.urls')),
     path('manage/', include('bio2vecweb.manage_urls')),
     path('api/', include('bio2vecweb.api_urls')),
     path('healthcheck', TemplateView.as_view(template_name='health.html')),

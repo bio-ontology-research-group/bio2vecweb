@@ -16,6 +16,7 @@
     <!-- CSS -->
     <link href="{% static "bower/bootstrap/dist/css/bootstrap.min.css" %}" rel="stylesheet">
     <link href="{% static "bower/font-awesome/web-fonts-with-css/css/fontawesome.min.css" %}" rel="stylesheet">
+    <link href="{% static "bower/fancybox/dist/jquery.fancybox.min.css" %}" rel="stylesheet">
 
     <!-- Custom styles for this template -->
     <link href="{% static "css/main.min.css" %}" rel="stylesheet">
@@ -63,12 +64,13 @@
 	    </div>
 	  </div>
 	</div>
+	{% block footer %}
 	<footer class="page-footer">
 	  <div class="font-13"> <b>© 2018  BORG, CBRC, KAUST</b> </div>
 	  
 	  <div class="to-top"><i class="fa fa-angle-double-up"></i></div>
 	</footer>
-	
+	{% endblock %}
       </div>
 
     </div>
@@ -77,6 +79,7 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="{% static "bower/jquery/dist/jquery.min.js" %}"></script>
     <script src="{% static "bower/bootstrap/dist/js/bootstrap.min.js" %}"></script>
+    <script src="{% static "bower/fancybox/dist/jquery.fancybox.min.js" %}"></script>
     {% block scripts %}
     {% endblock %}
     <script>
