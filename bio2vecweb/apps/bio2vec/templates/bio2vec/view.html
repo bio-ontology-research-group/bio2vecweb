@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+{% load static from staticfiles  %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-12">
+    <div class="ibox ibox-fullheight">
+      <div class="ibox-head">
+        <div class="ibox-title">{{ object.name }}</div>
+      </div>
+      <div class="ibox-body">
+	{{ object.description }}
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="input-group-icon input-group-icon-left input-group-lg mb-4">
+      <span class="input-icon input-icon-right"><i class="ti-search"></i></span>
+      <input class="form-control form-control-air font-light
+		    font-poppins border-0 ui-autocomplete-input"
+	     type="text"
+	     placeholder="Please search"
+	     id="restSearch"
+	     style="box-shadow:0 3px 6px
+		    rgba(10,16,20,.15);margin-top: 55px;"
+	     autocomplete="off" />
+      <span id="ajaxloading" class="input-icon input-icon-right"
+	    style="display: none;">
+	<img src="{% static 'images/ajax-loader-pop.gif' %}"
+	     alt="loading" />
+      </span>
+    </div> 
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-8">
+    <div class="ibox ibox-fullheight">
+      <div class="ibox-head" id="entity-details">
+	<div class="ibox-title">
+	  Name:  Brachyury protein homolog1
+	</div>
+      </div>
+      <div class="ibox-body"
+	   style="height: 500px; overflow-y: scroll;"
+	   id="accordion-1">
+	<ul class="list-group list-group-divider list-group-full
+		   faq-list">
+	  <li class="list-group-item">
+	    <a class="text-success" data-toggle="collapse"
+	       href="#faq1-2">
+	      Synonym
+	      <i class="fa fa-angle-down"></i>
+	    </a>
+	    <div class="collapse show" id="faq1-2">
+	      <div class="p-3 bg-primary-50 mt-3">
+		<ul class="media-list media-list-divider">
+		  <li style="padding-left: 20px;">AmBra-1</li>
+		  <li style="padding-left: 20px;">BRA-1</li>
+		</ul>
+	      </div>
+	    </div>
+	  </li>
+	</ul>
+	<p class="font-strong">
+	  <span class="font-strong"
+		style="color: #18c5a9;  padding-right: 20px;">
+	    Dataset name :
+	  </span>
+	  PPI_Network_graph
+	</p>
+	<p class="font-strong">
+	  <span class="font-strong"
+		style="color: #18c5a9;  padding-right: 20px;">
+	    entity_type:
+	  </span>
+	  gene
+	</p>
+	<p class="font-strong">
+	  <span class="font-strong"
+		style="color: #18c5a9;  padding-right: 50px;">
+	    ID:
+	  </span>
+	  <a href="http://www.uniprot.org/uniprot/Q17134"
+	     target="_blank">
+	    http://www.uniprot.org/uniprot/Q17134</a>
+	</p>
+	<ul class="list-group list-group-divider list-group-full
+		   faq-list">
+	  <li class="list-group-item">
+	    <a class="text-success" data-toggle="collapse"
+	       href="#faq1-1">Vector
+	      <i class="fa fa-angle-down"></i>
+	    </a>
+	  </li>
+	</ul>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="ibox ibox-fullheight">
+      <div class="ibox-head">
+        <div class="ibox-title">Similar Entities
+	  <span id="simloading" class="input-icon input-icon-right"
+		style="display: none;">
+	    <img src="{% static 'images/ajax-loader-pop.gif' %}"
+		 style="width:25px;height:25px" alt="loading"/>
+	  </span>
+	</div>
+      </div>
+      <div class="ibox-body">
+        <div style="height: 500px; overflow-y: scroll;" id="sim"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="ibox collapsed-mode">
+      <div class="ibox-head">
+        <div class="ibox-title">
+	  Neighbourhood Visualization
+	  <span id="graphloading"
+		class="input-icon input-icon-right"
+		style="display: none;">
+	    <img src="{% static 'images/ajax-loader-pop.gif' %}"
+		 style="width:25px;height:25px" alt="loading">
+	  </span>
+	</div>
+        <div class="ibox-tools">
+          <a class="ibox-collapse"><i class="ti-angle-down"></i></a>
+          <a class="fullscreen-link"><i class="ti-fullscreen"></i></a>
+        </div>
+      </div>
+      <div class="ibox-body">
+        <div id="bio2vecgraph"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+
+{% block scripts %}
+<script type="text/javascript" src="{% static 'js/detailedsearch.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/graph.js' %}"></script>
+{% endblock %}

@@ -20,11 +20,22 @@ from django.views.generic import TemplateView
 from django.conf import settings
 
 urlpatterns = [
+    path('', TemplateView.as_view(template_name='home.html')),
     path('admin/', admin.site.urls),
     path('bio2vec/', include('bio2vec.urls')),
     path('accounts/', include('accounts.urls')),
     path('partners/', include('partners.urls')),
+    path('news/', include('news.urls')),
+    path('events/', include('events.urls')),
     path('manage/', include('bio2vecweb.manage_urls')),
     path('api/', include('bio2vecweb.api_urls')),
+    path('about',
+         TemplateView.as_view(template_name='about.html'), name='about'),
+    path('publications',
+         TemplateView.as_view(template_name='publications.html'),
+         name='publications'),
+    path('contacts',
+         TemplateView.as_view(template_name='contacts.html'),
+         name='contacts'),
     path('healthcheck', TemplateView.as_view(template_name='health.html')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

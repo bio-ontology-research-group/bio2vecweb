@@ -52,7 +52,9 @@ INSTALLED_APPS = [
 LOCAL_APPS = [
     'accounts',
     'bio2vec',
-    'partners'
+    'partners',
+    'news',
+    'events',
 ]
 
 THIRD_PARTY_APPS = [

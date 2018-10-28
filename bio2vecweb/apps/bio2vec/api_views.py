@@ -72,10 +72,7 @@ class MostSimilarAPIView(APIView):
                     return Response(
                         {'status': 'error', 'message': 'Index query error'})
                 entities = r.json()['hits']['hits']
-                for entity in entities:
-                    score = entity['_score']
-                    entity = entity['_source']
-                    result[item['id']].append({'score': score, 'entity': entity})
+                result[item['id']] = entities
                     
         except Exception as e:
             print(e)
@@ -93,28 +90,32 @@ class SearchEntitiesAPIView(APIView):
                  'message': 'Please provide label parameter!'})
         size = request.GET.get('size', 10)
         offset = request.GET.get('offset', 0)
-        dataset = Dataset.objects.filter(name=dataset_name)
-        if not dataset.exists():
-            return Response({'status': 'error', 'message': 'Dataset not found'})
-        dataset = dataset.get()
         query = {
+            '_source': {"includes": ["id", "label"]},
             'query': {
-                'prefix': {'label': label}
+                'bool': {
+                    'must': [
+                        {'prefix': {'label': label}}
+                    ]
+                }
             },
             'from': offset,
             'size': size
         }
+        dataset = Dataset.objects.filter(name=dataset_name)
+        if dataset.exists():
+            dataset = dataset.get()
+            query['query']['bool']['must'].append(
+                {'type': { 'value': dataset.index_name }})
         result = []
         try:
             r = requests.post(
-                ELASTIC_INDEX_URL + '/' + dataset.index_name + '/_search', json=query)
+                ELASTIC_INDEX_URL + '/_search', json=query)
             if r.status_code != 200:
                 return Response(
                     {'status': 'error', 'message': 'Index query error'})
-
             hits = r.json()['hits']['hits']
-            print(hits)
-            result = list(map(lambda x: x['_source'], hits))
+            result = hits
         except Exception as e:
             print(e)
 
