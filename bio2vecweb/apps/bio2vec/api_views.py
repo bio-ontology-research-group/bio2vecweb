@@ -130,10 +130,8 @@ class EntitiesAPIView(APIView):
     def get(self, request, format=None):
         iris = request.GET.getlist('iri', None)
         dataset_name = request.GET.get('dataset', None)
-        if not iris:
-            return Response(
-                {'status': 'error',
-                 'message': 'Please provide iri parameter!'})
+        size = request.GET.get('size', 10)
+        offset = request.GET.get('offset', 0)
         if dataset_name is None:
             return Response(
                 {'status': 'error',
@@ -146,12 +144,18 @@ class EntitiesAPIView(APIView):
         dataset = dataset.get()
         query = {
             '_source': {"excludes": ["@model_factor"]},
-            'query': {
+            'from': offset,
+            'size': size
+        }
+
+        if iris:
+            query['query'] = {
                 'terms': {
                     'id': iris
                 }
-            },
-        }
+            }
+        else:
+            query['query'] = {'match_all': {}}
         
         result = []
         try:
