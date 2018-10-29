@@ -118,5 +118,51 @@ class SearchEntitiesAPIView(APIView):
             result = hits
         except Exception as e:
             print(e)
+            return Response(
+                {'status': 'exception', 'message': str(e)})
+            
 
+        return Response({'status': 'ok', 'result': result})
+
+
+class EntitiesAPIView(APIView):
+
+    def get(self, request, format=None):
+        iris = request.GET.getlist('iri', None)
+        dataset_name = request.GET.get('dataset', None)
+        if not iris:
+            return Response(
+                {'status': 'error',
+                 'message': 'Please provide iri parameter!'})
+        if dataset_name is None:
+            return Response(
+                {'status': 'error',
+                 'message': 'Please provide dataset parameter!'})
+        dataset = Dataset.objects.filter(name=dataset_name)
+        if not dataset.exists():
+            return Response(
+                {'status': 'error',
+                 'message': 'Dataset not found!'})
+        dataset = dataset.get()
+        query = {
+            '_source': {"excludes": ["@model_factor"]},
+            'query': {
+                'terms': {
+                    'id': iris
+                }
+            },
+        }
+        
+        result = []
+        try:
+            r = requests.post(
+                ELASTIC_INDEX_URL + '/' + dataset.index_name + '/_search', json=query)
+            if r.status_code != 200:
+                return Response(
+                    {'status': 'error', 'message': 'Index query error'})
+            hits = r.json()['hits']['hits']
+            result = hits
+        except Exception as e:
+            return Response(
+                {'status': 'exception', 'message': str(e)})
         return Response({'status': 'ok', 'result': result})

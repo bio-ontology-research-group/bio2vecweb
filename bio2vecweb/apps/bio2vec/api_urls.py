@@ -9,4 +9,8 @@ urlpatterns = [
     path('search',
          api_views.SearchEntitiesAPIView.as_view(),
          name='api-bio2vec-search'),
+    path('entities',
+         api_views.EntitiesAPIView.as_view(),
+         name='api-bio2vec-entities'),
+
 ]
