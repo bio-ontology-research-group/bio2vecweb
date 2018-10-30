@@ -41,62 +41,26 @@
     <div class="ibox ibox-fullheight">
       <div class="ibox-head" id="entity-details">
 	<div class="ibox-title">
-	  Name:  Brachyury protein homolog1
+	  {{ entity.label }}
 	</div>
       </div>
       <div class="ibox-body"
-	   style="height: 500px; overflow-y: scroll;"
+	   style="height: 300px; overflow-y: scroll;"
 	   id="accordion-1">
-	<ul class="list-group list-group-divider list-group-full
-		   faq-list">
-	  <li class="list-group-item">
-	    <a class="text-success" data-toggle="collapse"
-	       href="#faq1-2">
-	      Synonym
-	      <i class="fa fa-angle-down"></i>
-	    </a>
-	    <div class="collapse show" id="faq1-2">
-	      <div class="p-3 bg-primary-50 mt-3">
-		<ul class="media-list media-list-divider">
-		  <li style="padding-left: 20px;">AmBra-1</li>
-		  <li style="padding-left: 20px;">BRA-1</li>
-		</ul>
-	      </div>
-	    </div>
-	  </li>
-	</ul>
 	<p class="font-strong">
 	  <span class="font-strong"
 		style="color: #18c5a9;  padding-right: 20px;">
-	    Dataset name :
-	  </span>
-	  PPI_Network_graph
-	</p>
-	<p class="font-strong">
-	  <span class="font-strong"
-		style="color: #18c5a9;  padding-right: 20px;">
-	    entity_type:
-	  </span>
-	  gene
-	</p>
-	<p class="font-strong">
-	  <span class="font-strong"
-		style="color: #18c5a9;  padding-right: 50px;">
 	    ID:
 	  </span>
-	  <a href="http://www.uniprot.org/uniprot/Q17134"
-	     target="_blank">
-	    http://www.uniprot.org/uniprot/Q17134</a>
+	  {{ entity.id }}
 	</p>
-	<ul class="list-group list-group-divider list-group-full
-		   faq-list">
-	  <li class="list-group-item">
-	    <a class="text-success" data-toggle="collapse"
-	       href="#faq1-1">Vector
-	      <i class="fa fa-angle-down"></i>
-	    </a>
-	  </li>
-	</ul>
+	<p class="font-strong">
+	  <span class="font-strong"
+		style="color: #18c5a9;  padding-right: 20px;">
+	    Type:
+	  </span>
+	  {{ entity.type }}
+	</p>
       </div>
     </div>
   </div>
@@ -112,7 +76,24 @@
 	</div>
       </div>
       <div class="ibox-body">
-        <div style="height: 500px; overflow-y: scroll;" id="sim"></div>
+        <div style="height: 300px; overflow-y: scroll;" id="sim">
+	  <ul class="media-list media-list-divider">
+	    {% for sim in similars %}
+	    <li class="media flexbox">
+	      <div>
+		<div class="media-heading">
+		  <a class="text-success" href="{% url "view-dataset" object.pk %}?id={{ sim.id }}">
+		    {{ sim.label }}
+		  </a>
+		</div>
+		<div class="font-13 text-light">
+		  {{ sim.id }}
+		</div>
+	      </div>
+	    </li>
+	    {% endfor %}
+	  </ul>
+	</div>
       </div>
     </div>
   </div>
@@ -147,6 +128,11 @@
 
 
 {% block scripts %}
-<script type="text/javascript" src="{% static 'js/detailedsearch.js' %}"></script>
+<script>
+  var similars = {{ similars_json|safe }};
+  var targetId = similars[0]['id'];
+</script>
+<script type="text/javascript" src="{% static 'bower/d3/d3.min.js' %}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.7.1/d3-tip.min.js"></script>
 <script type="text/javascript" src="{% static 'js/graph.js' %}"></script>
 {% endblock %}
