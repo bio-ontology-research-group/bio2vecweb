@@ -5,11 +5,11 @@ from bio2vec import manage_views as views
 urlpatterns = [
     path('dataset/',
         login_required(views.MyDatasetListView.as_view()),
-        name='list_datasets'),
+        name='list-datasets'),
     path('dataset/create/',
         login_required(views.DatasetCreateView.as_view()),
-        name='create_dataset'),
+        name='create-dataset'),
     path('dataset/edit/<int:pk>',
         login_required(views.DatasetUpdateView.as_view()),
-        name='edit_dataset'),
+        name='edit-dataset'),
 ]

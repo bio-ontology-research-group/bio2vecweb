@@ -52,6 +52,7 @@ def configure_index(dataset_name):
                 "id": {"type": "keyword"},
                 "label": {"type": "keyword"},
                 "alt_ids": {"type": "keyword"},
+                "synonyms": {"type": "keyword"},
                 "type": {"type": "keyword"}
             }
         }
@@ -77,14 +78,15 @@ def index_dataset(dataset_id):
     embeds = []
     for line in f:
         it = line.strip().split('\t')
-        embed = it[4].split(',')
+        embed = it[5].split(',')
         embeds.append(list(map(lambda x: float(x), embed)))
         embed = ' '.join(map(lambda x: str(x[0]) + '|' + x[1], enumerate(embed)))
         doc = {
             'id': it[0],
             'label': it[1],
             'alt_ids': it[2].split(','),
-            'type': it[3],
+            'synonyms': it[3].split(','),
+            'type': it[4],
             '@model_factor': embed
         }
         data.append(doc)

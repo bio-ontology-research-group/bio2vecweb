@@ -9,18 +9,17 @@
       <tr>
 	<td><a href="{% url "edit-dataset" dataset.pk %}">{{ dataset.name }}</a></td>
 	<td>
+	  {% if dataset.indexed %} Indexed {% endif %}
 	</td>
 	<td>
 	  <form class="form" action="." method="post">
 	    {% csrf_token %}
-	    <input type="hidden" name="action" value="reload_ontology"/>
-	    <input type="hidden" name="ontology" value="{{ ontology.pk }}"/>
-	    <button type="submit" class="btn btn-primary"><i class="glyphicon glyphicon-refresh"></i></button>
 	  </form>
 	</td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
+  <a class="btn btn-primary" href="{% url "create-dataset" %}">Create dataset</a>
 </div>
 {% endblock %}

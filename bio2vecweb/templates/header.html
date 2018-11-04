@@ -42,26 +42,31 @@
             </a>
           </li>
 	</ul>
-	<ul class="nav navbar-toolbar pull-right">
-        {% if user.is_authenticated %}
-	  <li>
-            <a class="link"
-	       href="{% url "profile" %}"> <span class="brand">Profile</span>
-            </a>
-          </li>
-        {% else %}
-	  <li>
-            <a class="link"
+	  {% if user.is_authenticated %}
+	<div class="dropdown pull-right">
+	  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+	    Account
+	  </button>
+	  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+	    <a class="dropdown-item" href="{% url "list-datasets" %}">My Datasets</a>
+	    <a class="dropdown-item" href="{% url "profile" %}">Profile</a>
+	    <a class="dropdown-item" href="{% url "account_logout" %}">Logout</a>
+	  </div>
+	</div>
+	{% else %}
+	  <ul class="nav navbar-toolbar pull-right">
+            <li>
+              <a class="link"
 	       href="{% url "account_login" %}"> <span class="brand">Login</span>
-            </a>
-          </li>
-          <li>
-	    <a class="link"
-	       href="{% url "account_signup" %}"> <span class="brand">Register</span>
-            </a>
-	  </li>
+              </a>
+            </li>
+            <li>
+	      <a class="link"
+		 href="{% url "account_signup" %}"> <span class="brand">Register</span>
+              </a>
+	    </li>
+	  </ul>
 	{% endif %}
-	</ul>
 	<!-- END TOP-LEFT TOOLBAR-->
 	<!-- START NavigationL-->
       </div>

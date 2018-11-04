@@ -14,7 +14,8 @@ from django.core.files.uploadedfile import TemporaryUploadedFile
 from bio2vec.tasks import index_dataset
 
 EMBEDDING_FILE_HEADER = (
-    'IRI', 'Label', 'Alternative IRIs', 'Entity Type', 'Embedding Vector'
+    'IRI', 'Label', 'Alternative IRIs',
+    'Synonyms', 'Entity Type', 'Embedding Vector'
 )
 
 
@@ -34,11 +35,11 @@ class DatasetForm(forms.ModelForm):
 
     def validate_line(self, line):
         it = line.strip().split('\t')
-        if len(it) != 5:
+        if len(it) != 6:
             raise forms.ValidationError(
-                'TSV file should have five columns (%s, %s, %s, %s, %s)' % (
+                'TSV file should have five columns (%s, %s, %s, %s, %s, %s)' % (
                     EMBEDDING_FILE_HEADER))
-        embed = it[4].split(',')
+        embed = it[5].split(',')
         if len(embed) < 2:
             raise forms.ValidationError(
                 'Embedding vector length should be greater than 2')

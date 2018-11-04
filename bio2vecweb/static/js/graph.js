@@ -38,9 +38,7 @@ $(document).ready(function() {
     };
 
     function graph(data) {
-	console.log(data);
 
-	$('#bio2vecgraph').empty();
 	var margin = {
             top: 50,
             right: 200,
@@ -51,13 +49,17 @@ $(document).ready(function() {
             outerWidth = 900,
             outerHeight = 450,
             width = outerWidth - margin.left - margin.right,
-            height = outerHeight - margin.top - margin.bottom;
+            height = outerHeight - margin.top - margin.bottom,
+	    r = 5;
 
 	var padding = 0;
 	var currentTransform = null;
-	var legendData = [];
-	//scale
 
+	var types = new Set();
+	data.forEach(function(d) {
+	    types.add(d.type);
+	});
+	
 	var x = d3.scaleLinear()
             .domain(d3.extent(data, function(d) {
 		return d.x;
@@ -72,17 +74,11 @@ $(document).ready(function() {
             .range([height, 0])
             .nice();
 
-	var zoom = d3.zoom()
-            .scaleExtent([0, 500])
-            .translateExtent([
-		[-width * 2, -height * 2],
-		[width * 2, height * 2]
-            ])
-            .on("zoom", zoomed);
+	var zoom = d3.zoom().on("zoom", zoomed);
 
 	var color = d3.scaleOrdinal(d3.schemeCategory10)
-            .domain(["gene", "disease", "phenotype", "target","mesh", "gene_function", "chemical"]);
-
+            .domain(types);
+	
 	var tip = d3.tip()
             .attr("class", "d3-tip")
             .offset([-10, 0])
@@ -90,12 +86,12 @@ $(document).ready(function() {
 		return "name: " + d.label + "<br>" + "id : " + d.id;
             });
 
-	//chart
+	// chart
 	var chart = d3.select('#bio2vecgraph')
             .append('svg:svg')
             .attr('width', legendWidth)
             .attr('height', outerHeight)
-            .attr("fill", "gray")
+            .attr("fill", "white")
             .attr('class', 'chart')
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + " )")
@@ -141,31 +137,36 @@ $(document).ready(function() {
 
             })
             .attr("fill", function(d) {
-		return entityCol(d.entity, d.id, d.label);
+		return color(d.type);
             })
-            .attr("r", 3)
+            .attr("r", function(d) {
+		if (d.id == targetId) return r * 2;
+		return r;
+	    })
             .on("mouseover", tip.show)
             .on("mouseout", tip.hide);
+	
 	//add legand
 	var legendSpace = 20;
-	legendData.forEach(function(d, i) {
-
-            chart.append("circle")
-		.attr("r", 3)
+	var i = 0;
+	types.forEach(function(d) {
+	    chart.append("circle")
+		.attr("r", r)
 		.attr("cx", width + (margin.bottom / 2) + 5)
 		.attr("cy", (legendSpace / 2) + i * legendSpace)
 		.attr("fill", function() { 
-                    return d.color;
+                    return color(d);
 		});
 
             chart.append("text")
 		.attr("x", width + (margin.bottom / 2) + 13) // space legend
-		.attr("y", ((legendSpace / 2) + i * legendSpace)+5)
+		.attr("y", ((legendSpace / 2) + i * legendSpace) + 5)
 		.attr("class", "legend") // style the legend
 		.style("fill", function() { 
                     return "#3d3d3d";
 		})
-		.text((d.entity.replace('http://bio2vec.net/ontology/', '')).substring(0, 50));
+		.text(d);
+	    i++;
 	});
 
 
@@ -193,13 +194,6 @@ $(document).ready(function() {
 
 
 	}
-
-	function entityCol(id, name) {
-
-            return "#FF0000";
-            
-	}
-
     }
 
     graph(similars);
