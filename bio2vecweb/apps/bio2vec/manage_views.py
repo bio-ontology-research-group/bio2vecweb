@@ -29,7 +29,7 @@ class DatasetCreateView(FormRequestMixin, CreateView):
 
     def get_success_url(self):
         kwargs = {'pk': self.object.pk}
-        return reverse('edit_dataset', kwargs=kwargs)
+        return reverse('edit-dataset', kwargs=kwargs)
 
 
 class DatasetUpdateView(FormRequestMixin, UpdateView):
@@ -40,4 +40,4 @@ class DatasetUpdateView(FormRequestMixin, UpdateView):
 
     def get_success_url(self):
         kwargs = {'pk': self.object.pk}
-        return reverse('edit_dataset', kwargs=kwargs)
+        return reverse('edit-dataset', kwargs=kwargs)
