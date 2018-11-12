@@ -4,8 +4,8 @@
 {% for group in object_list %}
 <h5 class="font-strong mb-5 mt-5 text-center">{{ group.name }}</h5>
 <div class="row">
-{% for member in group.members.all %}
   <div class="card-deck">
+    {% for member in group.members.all %}
     <div class="card text-center card-air centered mb-3" style="max-width:320px;">
         <div class="card-body">
             <div class="card-avatar mt-3 mb-4">
@@ -18,8 +18,8 @@
             <div class="text-muted">{{ member.position }}</div>  
         </div>
     </div>
+    {% endfor %}
   </div>
-{% endfor %}
 </div>
 {% endfor %}
 {% endblock %}

@@ -9,6 +9,9 @@ class ResearchGroup(models.Model):
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        ordering = ['order']
     
 
 class Member(models.Model):
@@ -22,3 +25,6 @@ class Member(models.Model):
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        ordering = ['order']
