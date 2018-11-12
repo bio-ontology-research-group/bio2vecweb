@@ -223,6 +223,8 @@ FILE_UPLOAD_HANDLERS = [
     'django.core.files.uploadhandler.TemporaryFileUploadHandler',
 ]
 
+FILE_UPLOAD_PERMISSIONS = 0o644
+
 RECAPTCHA_PRIVATE_KEY = '6LefajoUAAAAAEiswDUvk1quNKpTJCg49gwrLXpb'
 RECAPTCHA_PUBLIC_KEY = '6LefajoUAAAAAOAWkZnaz-M2lgJOIR9OF5sylXmm'
 ACCOUNT_FORMS = {
