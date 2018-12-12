@@ -28,20 +28,33 @@ class DatasetDetailView(DetailView):
         dataset = self.get_object()
         iri = self.request.GET.get('iri', None)
 
+        entity = {'id': iri}
+        similars = {}
         if iri is not None:
             params = {
                 'dataset': dataset.name, 'id': iri, 'format': 'json', 'size':100}
             r = requests.get(
                 BIO2VEC_API_URL + '/mostsimilar', params=params)
-            res = r.json()
-            
+        else:
+            params = {
+                'dataset': dataset.name, 'format': 'json', 'size':100}
+            r = requests.get(
+                BIO2VEC_API_URL + '/entities', params=params)
+        try:
+            res = r.json()         
             if iri not in res['result']:
                 raise Http404
             similars = list(map(lambda x: x['_source'], res['result'][iri]))
-            context['entity'] = similars[0]
-            context['similars'] = similars
-            similars_json = json.dumps(similars)
-            context['similars_json'] = similars_json
+            entity = similars[0]
+        except Exception as e:
+            pass
+
+                
+            
+        context['entity'] = entity
+        context['similars'] = similars
+        similars_json = json.dumps(similars)
+        context['similars_json'] = similars_json
         return context
 
 

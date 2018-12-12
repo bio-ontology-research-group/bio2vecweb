@@ -61,6 +61,24 @@
 	  </span>
 	  {{ entity.type }}
 	</p>
+	<p class="font-strong">
+	  <span class="font-strong"
+		style="color: #18c5a9;  padding-right: 20px;">
+	    API:
+	  </span>
+	  <a href="{% url "api-bio2vec-mostsimilar" %}?id={{ entity.id }}&dataset={{ dataset.name }}">
+	    GO
+	  </a>
+	</p>
+	<p class="font-strong">
+	  <span class="font-strong"
+		style="color: #18c5a9;  padding-right: 20px;">
+	    SPARQL:
+	  </span>
+	  <a href="{% url "sparql-dataset" object.id %}?iri={{ entity.id }}">
+	   GO
+	  </a>
+	</p>
       </div>
     </div>
   </div>
