@@ -9,9 +9,10 @@
       <tr>
 	<td><a href="{% url "edit-dataset" dataset.pk %}">{{ dataset.name }}</a></td>
 	<td>
-	  {% if dataset.indexed %} Indexed {% endif %}
+	  {% if dataset.indexed %} Indexed {% else %} Indexing... {% endif %}
 	</td>
 	<td>
+	  <a href="{% url "view-dataset" dataset.pk %}">View</a>
 	  <form class="form" action="." method="post">
 	    {% csrf_token %}
 	  </form>
