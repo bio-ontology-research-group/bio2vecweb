@@ -43,3 +43,15 @@ class DatasetDetailView(DetailView):
             similars_json = json.dumps(similars)
             context['similars_json'] = similars_json
         return context
+
+
+class DatasetSPARQLView(DetailView):
+    model = Dataset
+    template_name = 'bio2vec/sparql.html'
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(DatasetSPARQLView, self).get_context_data(*args, **kwargs)
+        dataset = self.get_object()
+        iri = self.request.GET.get('iri', None)
+        context['iri'] = iri
+        return context
