@@ -27,17 +27,18 @@ class DatasetDetailView(DetailView):
         context = super(DatasetDetailView, self).get_context_data(*args, **kwargs)
         dataset = self.get_object()
         iri = self.request.GET.get('iri', None)
+        size = self.request.GET.get('size', 100)
 
         entity = {'id': iri}
         similars = {}
         if iri is not None:
             params = {
-                'dataset': dataset.name, 'id': iri, 'format': 'json', 'size':100}
+                'dataset': dataset.name, 'id': iri, 'format': 'json', 'size':size}
             r = requests.get(
                 BIO2VEC_API_URL + '/mostsimilar', params=params)
         else:
             params = {
-                'dataset': dataset.name, 'format': 'json', 'size':100}
+                'dataset': dataset.name, 'format': 'json', 'size':size}
             r = requests.get(
                 BIO2VEC_API_URL + '/entities', params=params)
         try:
