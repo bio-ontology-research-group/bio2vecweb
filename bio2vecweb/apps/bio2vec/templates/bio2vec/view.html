@@ -147,6 +147,7 @@
 
 {% block scripts %}
 <script>
+  var dataset = '{{ object.name }}';
   var similars = {{ similars_json|safe }};
   var targetId = similars[0]['id'];
 </script>
