@@ -46,7 +46,6 @@ class DatasetDetailView(DetailView):
                 similars = list(map(lambda x: x['_source'], res['result'][iri]))
             else:
                 similars = list(map(lambda x: x['_source'], res['result']))
-            print(BIO2VEC_API_URL, res)
             entity = similars[0]
         except Exception as e:
             print(e)
