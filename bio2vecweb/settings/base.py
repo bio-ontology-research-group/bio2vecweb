@@ -243,3 +243,4 @@ CORS_ORIGIN_ALLOW_ALL = True
 CORS_URLS_REGEX = r'^/api/.*$'
 
 ELASTIC_INDEX_URL = 'http://10.254.145.46:9200/bio2vec_test'
+BIO2VEC_API_URL = 'http://localhost:8000/api/bio2vec'

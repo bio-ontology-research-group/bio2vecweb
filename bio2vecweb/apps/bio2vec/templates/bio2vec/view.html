@@ -64,6 +64,28 @@
 	<p class="font-strong">
 	  <span class="font-strong"
 		style="color: #18c5a9;  padding-right: 20px;">
+	    Label:
+	  </span>
+	  {{ entity.label }}
+	</p>
+	<p class="font-strong">
+	  <span class="font-strong"
+		style="color: #18c5a9;  padding-right: 20px;">
+	    Synonyms:
+	  </span>
+	  {{ entity.synonyms }}
+	</p>
+	<p class="font-strong">
+	  <span class="font-strong"
+		style="color: #18c5a9;  padding-right: 20px;">
+	    Alternative IDs:
+	  </span>
+	  {{ entity.alt_ids }}
+	</p>
+	
+	<p class="font-strong">
+	  <span class="font-strong"
+		style="color: #18c5a9;  padding-right: 20px;">
 	    API:
 	  </span>
 	  <a href="{% url "api-bio2vec-mostsimilar" %}?id={{ entity.id }}&dataset={{ dataset.name }}">
@@ -147,8 +169,9 @@
 
 {% block scripts %}
 <script>
+  var dataset = '{{ object.name }}';
   var similars = {{ similars_json|safe }};
-  var targetId = similars[0]['id'];
+  var targetId = '{{ entity.id }}';
 </script>
 <script type="text/javascript" src="{% static 'bower/d3/d3.min.js' %}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.7.1/d3-tip.min.js"></script>
