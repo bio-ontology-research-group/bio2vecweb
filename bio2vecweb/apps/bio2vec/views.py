@@ -41,16 +41,19 @@ class DatasetDetailView(DetailView):
             r = requests.get(
                 BIO2VEC_API_URL + '/entities', params=params)
         try:
-            res = r.json()         
-            if iri not in res['result']:
-                raise Http404
-            similars = list(map(lambda x: x['_source'], res['result'][iri]))
+            res = r.json()
+            if iri is not None and iri in res['result']:
+                similars = list(map(lambda x: x['_source'], res['result'][iri]))
+            else:
+                similars = list(map(lambda x: x['_source'], res['result']))
+            print(BIO2VEC_API_URL, res)
             entity = similars[0]
         except Exception as e:
-            pass
+            print(e)
 
-                
-            
+        for key in entity:
+            if isinstance(entity[key], list):
+                entity[key] = ', '.join(entity[key])
         context['entity'] = entity
         context['similars'] = similars
         similars_json = json.dumps(similars)
