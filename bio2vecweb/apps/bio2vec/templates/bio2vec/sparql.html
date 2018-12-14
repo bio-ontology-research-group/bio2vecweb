@@ -24,9 +24,9 @@
 	  <textarea class="form-control" name="query" id="query"
 		    rows="11">PREFIX b2v: <http://bio2vec.net/function#>
 PREFIX b2vd: <http://bio2vec.net/dataset#>
-SELECT ?sim (b2v:similarity(b2vd:{{ object.index_name }}, ?sim, <{{ iri }}>) as ?val)
+SELECT ?sim ?val ?x ?y
 {
- ?sim b2v:mostSimilar(b2vd:{{ object.index_name }}<{{ iri }}> 10) .
+ (?sim ?val ?x ?y) b2v:mostSimilar(b2vd:{{ object.index_name }} <{{ iri }}> 10) .
 }
 </textarea>
 	</div>
