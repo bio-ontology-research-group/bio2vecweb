@@ -69,10 +69,15 @@ class DatasetForm(forms.ModelForm):
             itr = open(file_path, 'rt')
         line = next(itr)
         embedding_size = self.validate_line(line)
+        c = 0
+        # Validate first 10 lines of the file
         for line in itr:
             embed_size = self.validate_line(line)
             if embed_size != embedding_size:
                 raise forms.ValidationError('All embeddings should have same size')
+            c += 1
+            if c == 10:
+                break
         self.instance.indexed = False
         return embeddings_file
         
