@@ -3,7 +3,7 @@ $(document).ready(function() {
 	minLength: 0,
 	source: function(request, response) {
             $.ajax({
-		url: '/api/bio2vec/search?label=' + request.term,
+		url: '/api/bio2vec/search?label=' + request.term + '&dataset=' + dataset,
 		beforeSend: function() {
                     $('#ajaxloading').show();
 		},

@@ -9,4 +9,7 @@ urlpatterns = [
     path('details/<int:pk>',
         views.DatasetDetailView.as_view(),
         name='view-dataset'),
+    path('sparql/<int:pk>',
+        views.DatasetSPARQLView.as_view(),
+        name='sparql-dataset'),
 ]
