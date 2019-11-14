@@ -2,7 +2,7 @@ from django import forms
 from django.utils import timezone
 from django.db.models import Max
 import json
-from bio2vec.models import Dataset
+from bio2vec.models import Dataset, Distribution
 import shutil
 import os
 import re
@@ -26,9 +26,22 @@ class DatasetForm(forms.ModelForm):
             'created_by', 'date_created', 'modified_by', 'date_modified',
             'indexed',)
 
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request', None)
+        super(DatasetForm, self).__init__(*args, **kwargs)
+
+
+class DistributionForm(forms.ModelForm):
+
+    class Meta:
+        model = Distribution
+        exclude = (
+            'created_by', 'date_created', 'modified_by', 'date_modified',
+            'embedding_size',)
+    
     embeddings_file = forms.FileField(
         validators=[validators.FileExtensionValidator(['tsv', 'gz']),])
-    
+
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request', None)
         super(DatasetForm, self).__init__(*args, **kwargs)
@@ -83,7 +96,7 @@ class DatasetForm(forms.ModelForm):
         
     def save(self):
         if not self.instance.pk:
-            self.instance = super(DatasetForm, self).save(commit=False)
+            self.instance = super(DistributionForm, self).save(commit=False)
             self.instance.created_by = self.request.user
         else:
             self.instance.modified_by = self.request.user
