@@ -18,6 +18,8 @@ EMBEDDING_FILE_HEADER = (
     'Synonyms', 'Entity Type', 'Embedding Vector'
 )
 
+VERSION_RE = re.compile('^(\d+\.)(\d+\.)(\d+)$')
+
 
 class DatasetForm(forms.ModelForm):
     class Meta:
@@ -25,11 +27,35 @@ class DatasetForm(forms.ModelForm):
         exclude = (
             'created_by', 'date_created', 'modified_by', 'date_modified',
             'indexed',)
+        help_texts = {
+            'name': 'Name of the dataset',
+            'description': 'Describe the dataset. What features are encoded?',
+            'measurement_technique': 'What kind of method was used to generate embeddings?',
+            'original_dataset': 'Link to the original dataset',
+            'original_description': 'Provide small description of the original dataset',
+            'evaluated_in': 'An Experiment in which the embeddings are evaluated. URL to OpenML.',
+            'creators': '<url|orcid|text> separated by commas',
+            'contributors': '<url|orcid|text> separated by commas',
+            'publisher': '<url>',
+            'keywords': 'Types of entities used in the dataset',
+            'citation': 'A published reference for the publication'
+        
+        }
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request', None)
         super(DatasetForm, self).__init__(*args, **kwargs)
 
+        
+    def save(self):
+        if not self.instance.pk:
+            self.instance = super(DatasetForm, self).save(commit=False)
+            self.instance.created_by = self.request.user
+        else:
+            self.instance.modified_by = self.request.user
+            self.instance.date_modified = timezone.now()
+        self.instance.save()
+        return self.instance
 
 class DistributionForm(forms.ModelForm):
 
@@ -37,14 +63,19 @@ class DistributionForm(forms.ModelForm):
         model = Distribution
         exclude = (
             'created_by', 'date_created', 'modified_by', 'date_modified',
-            'embedding_size',)
+            'embedding_size', 'dataset')
+        help_texts = {
+            'version': 'major.minor.patch',
+        }
     
     embeddings_file = forms.FileField(
-        validators=[validators.FileExtensionValidator(['tsv', 'gz']),])
+        validators=[validators.FileExtensionValidator(['tsv', 'gz']),],
+        help_text='*.tsv or *.tsv.gz file with embeddings')
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request', None)
-        super(DatasetForm, self).__init__(*args, **kwargs)
+        self.dataset = kwargs.pop('dataset', None)
+        super(DistributionForm, self).__init__(*args, **kwargs)
 
     def validate_line(self, line):
         it = line.strip().split('\t')
@@ -92,16 +123,24 @@ class DistributionForm(forms.ModelForm):
             if c == 10:
                 break
         self.instance.indexed = False
+        self.instance.embedding_size = embedding_size
         return embeddings_file
+
+    def clean_version(self):
+        version = self.cleaned_data['version']
+        if not VERSION_RE.match(version):
+            raise forms.ValidationError('Version format should be MAJOR.MINOR.PATCH')
+        return version
         
     def save(self):
         if not self.instance.pk:
             self.instance = super(DistributionForm, self).save(commit=False)
             self.instance.created_by = self.request.user
+            self.instance.dataset = self.dataset
         else:
             self.instance.modified_by = self.request.user
             self.instance.date_modified = timezone.now()
         self.instance.save()
         if not self.instance.indexed:
-            index_dataset.delay(self.instance.pk)
+            index_dataset.delay(self.dataset.pk)
         return self.instance

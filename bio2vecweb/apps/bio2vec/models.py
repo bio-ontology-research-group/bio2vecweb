@@ -28,7 +28,7 @@ class Dataset(models.Model):
         models.CharField(max_length=127), blank=True, null=True)
     publisher = models.CharField(max_length=255, blank=True, null=True)
     citation = models.CharField(max_length=127, blank=True, null=True)
-    measurementTechnique = models.CharField(max_length=127, blank=True, null=True)
+    measurement_technique = models.CharField(max_length=127, blank=True, null=True)
     evaluated_in = models.CharField(max_length=127, blank=True, null=True)
     indexed = models.BooleanField(default=False)
 
@@ -42,15 +42,18 @@ class Dataset(models.Model):
     def index_name(self):
         return 'dataset_' + str(self.pk)
 
+    def get_latest_dist(self):
+        return self.distributions.order_by('-pk').first()
+
 
 class Distribution(models.Model):
-    CC0 = 'CC0',
+    CC0 = 'CC0'
     CCBY = 'CC BY'
     CCBYNC = 'CC BY-NC'
     LICENSES = [
         (CC0, CC0),
         (CCBY, CCBY),
-        (CCBYNC, CCBYNC)
+        (CCBYNC, CCBYNC),
     ]
     dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE, related_name='distributions')
     created_by = models.ForeignKey(
@@ -67,7 +70,7 @@ class Distribution(models.Model):
     license = models.CharField(max_length=31, choices=LICENSES, default=CC0)
     
     class Meta:
-        verbose_name_plural = 'Datasets'
+        verbose_name_plural = 'Distributions'
 
     def __str__(self):
         return self.dataset.name + ' ' + self.version

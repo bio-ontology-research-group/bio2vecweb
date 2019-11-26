@@ -9,45 +9,28 @@ from bio2vec.models import Dataset
 import os
 import gzip
 import requests
-from sklearn.decomposition import TruncatedSVD
+from MulticoreTSNE import MulticoreTSNE as TSNE
+import numpy as np
 
-ELASTIC_INDEX_URL = getattr(
-    settings, 'ELASTIC_INDEX_URL', 'http://localhost:9200/bio2vec')
 
-def create_index():
-    settings = {
-        "settings" : {
-            "analysis": {
-                "analyzer": {
-                    "payload_analyzer": {
-                        "type": "custom",
-                        "tokenizer":"whitespace",
-                        "filter":"delimited_payload_filter"
-                    }
-                }
-            }
-        }
-    }
-    r = requests.put(ELASTIC_INDEX_URL, json=settings)
-    print(r.json())
+ELASTICSEARCH_URL = getattr(
+    settings, 'ELASTICSEARCH_URL', 'http://localhost:9200/')
+TSNE_JOBS = getattr(
+    settings, 'TSNE_JOBS', 8)
 
-def configure_index(dataset_name):
-    r = requests.head(ELASTIC_INDEX_URL)
-    if r.status_code == 404:
-        create_index()
 
-    match_all = {"query": {"match_all":{}}}
-    r = requests.post(
-        ELASTIC_INDEX_URL + '/' + dataset_name + '/_delete_by_query?conflicts=proceed',
-        json=match_all)
-    print('Delete', r.json())
+
+def configure_index(index_url, dims):
+    r = requests.head(index_url)
+    if r.status_code != 404:
+        requests.delete(index_url)
+
     mapping = {
-        dataset_name : {
+        "mappings" : {
             "properties" : {
-                "@model_factor": {
-                    "type": "text",
-                    "term_vector": "with_positions_offsets_payloads",
-                    "analyzer" : "payload_analyzer"
+                "embedding": {
+                    "type": "dense_vector",
+                    "dims": dims
                 },
                 "id": {"type": "keyword"},
                 "label": {"type": "keyword"},
@@ -57,17 +40,19 @@ def configure_index(dataset_name):
             }
         }
     }
-    r = requests.post(
-        ELASTIC_INDEX_URL + '/' + dataset_name + '/_mapping', json=mapping)
+    r = requests.put(index_url, json=mapping)
     print(r.json())
 
 
 @task
 def index_dataset(dataset_id):
     dataset = Dataset.objects.get(pk=dataset_id)
-    configure_index(dataset.index_name)
+    distrib = dataset.get_latest_dist()
+    filepath = distrib.embeddings_file.path
+    index_url = ELASTICSEARCH_URL + dataset.index_name
+    dims = distrib.embedding_size
+    configure_index(index_url, dims)
     
-    filepath = dataset.embeddings_file.path
     _, ext = os.path.splitext(filepath)
     if ext == '.gz':
         f = gzip.open(filepath, 'rt')
@@ -79,25 +64,23 @@ def index_dataset(dataset_id):
     for line in f:
         it = line.strip().split('\t')
         embed = it[5].split(',')
-        embeds.append(list(map(lambda x: float(x), embed)))
-        embed = ' '.join(map(lambda x: str(x[0]) + '|' + x[1], enumerate(embed)))
+        embed = list(map(lambda x: float(x), embed))
+        embeds.append(embed)
         doc = {
             'id': it[0],
             'label': it[1],
             'alt_ids': it[2].split(','),
             'synonyms': it[3].split(','),
             'type': it[4],
-            '@model_factor': embed
+            'embedding': embed
         }
         data.append(doc)
-    svd = TruncatedSVD(n_components=2)
-    res = svd.fit_transform(embeds)
+    res = TSNE(n_jobs=TSNE_JOBS).fit_transform(np.hstack(embeds).reshape(-1, dims))
     for i, doc in enumerate(data):
         doc['x'] = res[i, 0]
         doc['y'] = res[i, 1]
-        r = requests.post(
-            ELASTIC_INDEX_URL + '/' + dataset.index_name + '/' + str(i), json=doc)
-        i += 1
+        r = requests.put(
+            index_url + '/_doc/' + str(i), json=doc)
     
     dataset.indexed = True
     dataset.save()

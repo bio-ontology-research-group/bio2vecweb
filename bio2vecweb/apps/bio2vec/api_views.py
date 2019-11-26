@@ -8,8 +8,8 @@ from django.conf import settings
 from collections import defaultdict
 from bio2vec.models import Dataset
 
-ELASTIC_INDEX_URL = getattr(
-    settings, 'ELASTIC_INDEX_URL', 'http://localhost:9200/bio2vec')
+ELASTICSEARCH_URL = getattr(
+    settings, 'ELASTICSEARCH_URL', 'http://localhost:9200/')
 
 
 class MostSimilarAPIView(APIView):
@@ -29,51 +29,43 @@ class MostSimilarAPIView(APIView):
             }
         }
         result = {}
+        index_url = ELASTICSEARCH_URL + dataset.index_name
         try:
             r = requests.post(
-                ELASTIC_INDEX_URL + '/' + dataset.index_name + '/_search', json=query)
+                index_url + '/_search', json=query)
             if r.status_code != 200:
                 return Response(
                     {'status': 'error', 'message': 'Index query error'})
-
             hits = r.json()['hits']['hits']
             for item in hits:
                 item = item['_source']
                 result[item['id']] = []
-                vector = item['@model_factor']
-                vector = vector.split()
-                vector = list(map(lambda x: float(x.split('|')[1]), vector))
+                vector = item['embedding']
                 query = {
-                    "_source": {"excludes": ["@model_factor"]},
+                    "_source": {"excludes": ["embedding"]},
                     "query": {
-                        "function_score": {
-                            "script_score": {
-                                "script": {
-                	            "inline": "payload_vector_score",
-                	            "lang": "native",
-                	            "params": {
-                    	                "field": "@model_factor",
-                    	                "vector": vector,
-                    	                "cosine" : True
-                                    }
-				}
+                        "script_score": {
+                            "query" : {
+                                "match_all": {}
                             },
-                            "boost_mode": "replace"
+                            "script": {
+                                "source": "cosineSimilarity(params.vector, doc['embedding'])",
+                                "params": {
+                                    "vector": vector,
+                                }
+                            }
                         }
                     },
                     "from": offset,
                     "size": size
                 }
                     
-                r = requests.post(
-                    ELASTIC_INDEX_URL + '/' + dataset.index_name + '/_search',
-                    json=query)
+                r = requests.post(index_url + '/_search', json=query)
                 if r.status_code != 200:
                     return Response(
                         {'status': 'error', 'message': 'Index query error'})
                 entities = r.json()['hits']['hits']
                 result[item['id']] = entities
-                    
         except Exception as e:
             print(e)
         return Response({'status': 'ok', 'result': result})
@@ -104,13 +96,12 @@ class SearchEntitiesAPIView(APIView):
         }
         dataset = Dataset.objects.filter(name=dataset_name)
         if dataset.exists():
-            dataset = dataset.get()
-            query['query']['bool']['must'].append(
-                {'type': { 'value': dataset.index_name }})
+            index_url = ELASTICSEARCH_URL + dataset.index_name
+        else:
+            index_url = ELASTICSEARCH_URL + 'dataset_*'
         result = []
         try:
-            r = requests.post(
-                ELASTIC_INDEX_URL + '/_search', json=query)
+            r = requests.post(index_url + '/_search', json=query)
             if r.status_code != 200:
                 return Response(
                     {'status': 'error', 'message': 'Index query error'})
@@ -143,7 +134,7 @@ class EntitiesAPIView(APIView):
                  'message': 'Dataset not found!'})
         dataset = dataset.get()
         query = {
-            '_source': {"excludes": ["@model_factor"]},
+            '_source': {"excludes": ["embedding"]},
             'from': offset,
             'size': size
         }
@@ -158,9 +149,9 @@ class EntitiesAPIView(APIView):
             query['query'] = {'match_all': {}}
         
         result = []
+        index_url = ELASTICSEARCH_URL + dataset.index_name
         try:
-            r = requests.post(
-                ELASTIC_INDEX_URL + '/' + dataset.index_name + '/_search', json=query)
+            r = requests.post(index_url + '/_search', json=query)
             if r.status_code != 200:
                 return Response(
                     {'status': 'error', 'message': 'Index query error'})
