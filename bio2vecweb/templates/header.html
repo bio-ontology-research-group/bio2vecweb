@@ -14,46 +14,59 @@
         <!-- START TOP-LEFT TOOLBAR-->
         <ul class="nav navbar-toolbar">
           <li>
-            <a class="link" href="/partner.html"> <span class="brand">Partners</span>
+            <a class="link" href="{% url 'list-partners' %}"> <span class="brand">Partners</span>
             </a>
           </li>
           <li>
-            <a class="link" href="/publication.html"> <span class="brand">Publications</span>
+            <a class="link" href="{% url 'publications' %}"> <span class="brand">Publications</span>
             </a>
           </li>
           <li>
-            <a class="link" href="/resources.html"> <span class="brand">Resources</span>
+            <a class="link" href="{% url 'list-datasets' %}"> <span class="brand">Resources</span>
             </a>
           </li>
           <li>
-            <a class="link" href="/news.html"> <span class="brand">News</span>
+            <a class="link" href="{% url 'list-news' %}"> <span class="brand">News</span>
             </a>
           </li>
           <li>
-            <a class="link" href="/events.html"> <span class="brand">Events</span>
+            <a class="link" href="{% url 'list-events' %}"> <span class="brand">Events</span>
             </a>
           </li>
           <li>
-            <a class="link" href="/About.html"> <span class="brand">About</span>
+            <a class="link" href="{% url 'about' %}"> <span class="brand">About</span>
             </a>
           </li>
 	  <li>
-            <a class="link" href="/ContactUs.html"> <span class="brand">Contact Us</span>
+            <a class="link" href="{% url 'contacts' %}"> <span class="brand">Contact Us</span>
             </a>
           </li>
 	</ul>
-	<ul class="nav navbar-toolbar pull-right">
-          <li>
-            <a class="link"
+	  {% if user.is_authenticated %}
+	<div class="dropdown pull-right">
+	  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+	    Account
+	  </button>
+	  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+	    <a class="dropdown-item" href="{% url "list-my-datasets" %}">My Datasets</a>
+	    <a class="dropdown-item" href="{% url "profile" %}">Profile</a>
+	    <a class="dropdown-item" href="{% url "account_logout" %}">Logout</a>
+	  </div>
+	</div>
+	{% else %}
+	  <ul class="nav navbar-toolbar pull-right">
+            <li>
+              <a class="link"
 	       href="{% url "account_login" %}"> <span class="brand">Login</span>
-            </a>
-          </li>
-          <li>
-	    <a class="link"
-	       href="{% url "account_signup" %}"> <span class="brand">Register</span>
-            </a>
-	  </li>
-	</ul>
+              </a>
+            </li>
+            <li>
+	      <a class="link"
+		 href="{% url "account_signup" %}"> <span class="brand">Register</span>
+              </a>
+	    </li>
+	  </ul>
+	{% endif %}
 	<!-- END TOP-LEFT TOOLBAR-->
 	<!-- START NavigationL-->
       </div>

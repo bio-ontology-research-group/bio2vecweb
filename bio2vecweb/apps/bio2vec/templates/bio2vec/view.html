@@ -1,0 +1,179 @@
+{% extends 'base.html' %}
+{% load static from staticfiles  %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-12">
+    <div class="ibox ibox-fullheight">
+      <div class="ibox-head">
+        <div class="ibox-title">{{ object.name }}</div>
+      </div>
+      <div class="ibox-body">
+	{{ object.description }}
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="input-group-icon input-group-icon-left input-group-lg mb-4">
+      <span class="input-icon input-icon-right"><i class="ti-search"></i></span>
+      <input class="form-control form-control-air font-light
+		    font-poppins border-0 ui-autocomplete-input"
+	     type="text"
+	     placeholder="Please search"
+	     id="restSearch"
+	     style="box-shadow:0 3px 6px
+		    rgba(10,16,20,.15);margin-top: 55px;"
+	     autocomplete="off" />
+      <span id="ajaxloading" class="input-icon input-icon-right"
+	    style="display: none;">
+	<img src="{% static 'images/ajax-loader-pop.gif' %}"
+	     alt="loading" />
+      </span>
+    </div> 
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-8">
+    <div class="ibox ibox-fullheight">
+      <div class="ibox-head" id="entity-details">
+	<div class="ibox-title">
+	  {{ entity.label }}
+	</div>
+      </div>
+      <div class="ibox-body"
+	   style="height: 300px; overflow-y: scroll;"
+	   id="accordion-1">
+	<p class="font-strong">
+	  <span class="font-strong"
+		style="color: #18c5a9;  padding-right: 20px;">
+	    ID:
+	  </span>
+	  {{ entity.id }}
+	</p>
+	<p class="font-strong">
+	  <span class="font-strong"
+		style="color: #18c5a9;  padding-right: 20px;">
+	    Type:
+	  </span>
+	  {{ entity.type }}
+	</p>
+	<p class="font-strong">
+	  <span class="font-strong"
+		style="color: #18c5a9;  padding-right: 20px;">
+	    Label:
+	  </span>
+	  {{ entity.label }}
+	</p>
+	<p class="font-strong">
+	  <span class="font-strong"
+		style="color: #18c5a9;  padding-right: 20px;">
+	    Synonyms:
+	  </span>
+	  {{ entity.synonyms }}
+	</p>
+	<p class="font-strong">
+	  <span class="font-strong"
+		style="color: #18c5a9;  padding-right: 20px;">
+	    Alternative IDs:
+	  </span>
+	  {{ entity.alt_ids }}
+	</p>
+	
+	<p class="font-strong">
+	  <span class="font-strong"
+		style="color: #18c5a9;  padding-right: 20px;">
+	    API:
+	  </span>
+	  <a href="{% url "api-bio2vec-mostsimilar" %}?id={{ entity.id }}&dataset={{ dataset.name }}">
+	    GO
+	  </a>
+	</p>
+	<p class="font-strong">
+	  <span class="font-strong"
+		style="color: #18c5a9;  padding-right: 20px;">
+	    SPARQL:
+	  </span>
+	  <a href="{% url "sparql-dataset" object.id %}?iri={{ entity.id }}">
+	   GO
+	  </a>
+	</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="ibox ibox-fullheight">
+      <div class="ibox-head">
+        <div class="ibox-title">Similar Entities
+	  <span id="simloading" class="input-icon input-icon-right"
+		style="display: none;">
+	    <img src="{% static 'images/ajax-loader-pop.gif' %}"
+		 style="width:25px;height:25px" alt="loading"/>
+	  </span>
+	</div>
+      </div>
+      <div class="ibox-body">
+        <div style="height: 300px; overflow-y: scroll;" id="sim">
+	  <ul class="media-list media-list-divider">
+	    {% for sim in similars %}
+	    <li class="media flexbox">
+	      <div>
+		<div class="media-heading">
+		  <a class="text-success" href="{% url "view-dataset" object.pk %}?iri={{ sim.id }}">
+		    {{ sim.label }}
+		  </a>
+		</div>
+		<div class="font-13 text-light">
+		  {{ sim.id }}
+		</div>
+	      </div>
+	    </li>
+	    {% endfor %}
+	  </ul>
+	</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="ibox collapsed-mode">
+      <div class="ibox-head">
+        <div class="ibox-title">
+	  Neighbourhood Visualization
+	  <span id="graphloading"
+		class="input-icon input-icon-right"
+		style="display: none;">
+	    <img src="{% static 'images/ajax-loader-pop.gif' %}"
+		 style="width:25px;height:25px" alt="loading">
+	  </span>
+	</div>
+        <div class="ibox-tools">
+          <a class="ibox-collapse"><i class="ti-angle-down"></i></a>
+          <a class="fullscreen-link"><i class="ti-fullscreen"></i></a>
+        </div>
+      </div>
+      <div class="ibox-body">
+        <div id="bio2vecgraph"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+
+{% block scripts %}
+<script>
+  var dataset = '{{ object.name }}';
+  var similars = {{ similars_json|safe }};
+  var targetId = '{{ entity.id }}';
+</script>
+<script type="text/javascript" src="{% static 'bower/d3/d3.min.js' %}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.7.1/d3-tip.min.js"></script>
+<script type="text/javascript" src="{% static 'js/graph.js' %}"></script>
+{% endblock %}

@@ -51,7 +51,10 @@ INSTALLED_APPS = [
 
 LOCAL_APPS = [
     'accounts',
-    'bio2vec'
+    'bio2vec',
+    'partners',
+    'news',
+    'events',
 ]
 
 THIRD_PARTY_APPS = [
@@ -181,15 +184,10 @@ SITE_ID = 1
 SITE_DOMAIN = 'localhost:8000'
 SERVER_EMAIL = 'info@bio2vec.net'
 
-# Celery configuration
-RABBIT_HOST = 'localhost'
-RABBIT_PORT = 5672
-
-CELERY_BROKER_URL = 'pyamqp://{user}:{pwd}@{host}:{port}//'.format(
-    user=os.environ.get('RABBIT_USER', 'guest'),
-    pwd=os.environ.get('RABBIT_PASSWORD', 'guest'),
-    host=RABBIT_HOST,
-    port=RABBIT_PORT)
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
 
 CELERY_RESULT_BACKEND = 'rpc://'
 CELERY_WORKER_CONCURRENCY = 24
@@ -220,6 +218,8 @@ FILE_UPLOAD_HANDLERS = [
     'django.core.files.uploadhandler.TemporaryFileUploadHandler',
 ]
 
+FILE_UPLOAD_PERMISSIONS = 0o644
+
 RECAPTCHA_PRIVATE_KEY = '6LefajoUAAAAAEiswDUvk1quNKpTJCg49gwrLXpb'
 RECAPTCHA_PUBLIC_KEY = '6LefajoUAAAAAOAWkZnaz-M2lgJOIR9OF5sylXmm'
 ACCOUNT_FORMS = {
@@ -236,3 +236,6 @@ MESSAGE_TAGS = {
 
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_URLS_REGEX = r'^/api/.*$'
+
+ELASTICSEARCH_URL = 'http://localhost:9200/'
+BIO2VEC_API_URL = 'http://localhost:8000/api/bio2vec'

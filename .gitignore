@@ -1,3 +1,5 @@
 venv/
 *.pyc
-bio2vecweb/public
+public/
+data/
+media/

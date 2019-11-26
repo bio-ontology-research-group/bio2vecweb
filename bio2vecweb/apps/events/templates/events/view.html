@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row" style="padding-bottom: 200px;">
+  <div class="col-lg-12 centered">
+    <div class="ibox">
+      <div class="ibox-body">
+        <h1 class="text-center my-5">{{ object.title }}</h1>
+        <p>{{ object.description }}</p>
+        <p>{{ object.content|safe }}</p>
+        <p>{{ object.location }}</p>
+        <p>{{ object.start_date|date:"d M Y" }} - {{ object.end_date|date:"d M Y" }}</p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

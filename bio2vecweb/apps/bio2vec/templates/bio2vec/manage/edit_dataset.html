@@ -8,6 +8,9 @@
     {% for field in form %}
     <div class="form-group">
       {% if field.field.required %}*{% endif %}{{ field.label_tag }}
+      {% if field.help_text %}
+      <small class="form-text text-muted"> {{ field.help_text }} </small>
+      {% endif %}
       {{ field|add_class:"form-control" }}
       {{ field.errors }}
     </div>

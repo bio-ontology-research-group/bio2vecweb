@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+  <div class="col-lg-12">
+    <div class="ibox ibox-fullheight">
+      <div class="ibox-head">
+        <div class="ibox-title">Datasets</div>
+      </div>
+      <div class="ibox-body">
+        <ul class="media-list media-list-divider">
+	  {% for ds in object_list %}
+	  <li class="media"><div class="media-body">
+	      <div class="media-heading">
+		<a href="{% url 'view-dataset' ds.pk %}">{{ ds.name }}</a>
+	      </div>
+	      <div class="text-muted">{{ ds.description }}</div>
+	  </li>
+	  {% endfor %}
+        </ul>
+      </div>
+    </div>
+    
+  </div>
+</div>
+{% endblock %}

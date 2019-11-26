@@ -1,17 +1,44 @@
 {% extends "base.html" %}
+{% load static from staticfiles %}
 
 {% block content %}
-<div class="starter-template">
-  <h1>Bio2Vec</h1>
-  <p class="lead">Smart data analytics for life sciences.</p>
+<div class="row">
+<div class="col-md-3"></div>
+<div class="col-md-8">
+    <img src="{% static "images/Bio2Vec.png" %}" style="padding-left: 10px" alt="Bio2Vec" height="300">
 </div>
+<div class="col-md-1"></div>
+</div>
+<div class="row">
+<div class="col-md-2"></div>
+<div class="col-md-8" style="padding-bottom: 300px;">
+    <div class="tab-pane fade show active text-center">
+        <div class="h2 mt-5 mb-3 text-muted">Smart data analytics for life sciences</div>
+    </div>
+    <div class="input-group-icon input-group-icon-left input-group-lg mb-4">
+        <span class="input-icon input-icon-right"><i class="ti-search"></i></span>
+        <input class="form-control form-control-air font-light font-poppins border-0 ui-autocomplete-input"
+	       type="text"
+	       placeholder="search similar vectors of biomedical entities  e.g. 'BRCA' "
+	       id="restSearch"
+	       style="box-shadow:0 3px 6px rgba(10,16,20,15);"
+	       autocomplete="off">
+        <span id="ajaxloading"
+	      class="input-icon input-icon-right"
+              style="display: none;">
+	  <img src="{% static "images/ajax-loader-pop.gif" %}" alt="loading">
+	</span>
+    </div>
+    
+</div>
+<div class="col-md-2" id="dataset"></div>
+<div class="row"></div>
+<div class="row"></div>
+</div>
+<div class="row"></div>
+<div class="row"></div>
+{% endblock %}
 
-<p class="center">
-  Bio2Vec aims to develop the methods and infrastructure that allows
-  users to integrate and analyze large-scale heterogenous life science
-  data. Bio2Vec will generate embeddings from text and knowledge graphs
-  to learn representations of proteins, drugs, phenotypes, diseases, and
-  interactions. Bio2Vec will also provide a repository of FAIR
-  (Findable, Accessible, Interoperable and Reusable) data and models.
-</p>
+{% block scripts %}
+<script type="text/javascript" src="{% static 'js/bio2vec.js' %}"></script>
 {% endblock %}

@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="col-md-6 col-md-offset-3">
+  <h2>{{ dataset.name }}</h2>
+  <table class="table table-striped">
+    <thead><th>#</th><th>Version</th><th>License</th><th>Actions</th></thead>
+    <tbody>
+      {% for dist in dataset.distributions.all %}
+      <tr>
+	<td>{{ forloop.counter }}</td>
+	<td>{{ dist.version }}</td>
+	<td>{{ dist.license }}</td>
+	<td>
+	  <a href="{% url "edit-distrib" dataset.pk dist.pk %}"><i class="fas fa-edit"></i></a>
+	  <a href="{% url "delete-distrib" dist.pk %}"><i class="fas fa-trash-alt"></i></a>
+	</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <form class="form" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {% for field in form %}
+    <div class="form-group">
+      {% if field.field.required %}*{% endif %}{{ field.label_tag }}
+      {% if field.help_text %}
+      <small class="form-text text-muted"> {{ field.help_text }} </small>
+      {% endif %}
+      {{ field|add_class:"form-control" }}
+      {{ field.errors }}
+    </div>
+    {% endfor %}
+    {{ form.non_field_errors }}
+    <button type="submit" class="btn btn-primary">
+      {% if object %}
+      Save
+      {% else %}
+      Create
+      {% endif %}
+    </button>
+  </form>
+</div>
+
+{% endblock %}

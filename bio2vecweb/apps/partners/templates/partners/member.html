@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block head %}
+<style>
+  .fancybox-custom .fancybox-skin {
+  box-shadow: 0 0 50px #222;
+  }
+  body {
+  max-height: 300px;
+  margin: 0 auto;
+  }
+</style>
+{% endblock %}
+{% block navigation %}
+{% endblock %}
+
+{% block content %}
+<div class="ibox flex-1">
+  <div class="ibox-body">
+    <div class="flexbox">
+      <div class="flexbox-b">
+        <div class="ml-5 mr-5">
+          <img class="img-circle" src="{{ object.avatar.url }}" alt="image" width="110" />
+        </div>
+        <div>
+          <h4>{{ object.name }} </h4>
+          <div class="text-muted font-13 mb-3">
+            <span class="mr-3">{{ object.position }}</span>								 
+	  </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div style="padding-bottom: 50px;">
+  <p>
+    {{ object.bio }}
+  </p>
+</div>  
+{% endblock %}
+
+{% block footer %}
+{% endblock %}

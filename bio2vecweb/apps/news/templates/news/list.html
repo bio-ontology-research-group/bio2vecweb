@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row mb-5">
+  {% for news in object_list %}
+  <div class="col-md-4">
+    <div class="card mb-4">
+      <div class="rel">
+        <a class="link" href="{% url 'view-news' news.pk %}" target="_blank">
+          <img class="card-img-top" src="news.image.url" alt="image" style="background-color: #34495f;">
+        </a>
+        
+      </div>
+      <div class="card-body">
+        <h4 class="card-title mb-2">
+          <a class="color-inherit" href="{% url 'view-news' news.pk %}" target="_blank">{{ news.title }}</a>
+        </h4>
+        <div class="text-muted mb-3">{{ news.news_date|date:"d M Y" }}</div>
+        <p class="text-light">
+	  {{ news.description }}
+	</p>
+        
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

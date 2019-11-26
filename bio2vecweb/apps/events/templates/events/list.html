@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="row">
+  <div class="col-xl-12">
+    <div class="ibox ibox-fullheight">
+      <div class="ibox-head">
+        <div class="ibox-title">Latest Events</div> 
+      </div>
+      <div class="ibox-body">
+        <ul class="media-list media-list-divider">
+	  {% for event in object_list %}
+	  <li class="media">
+            <a class="media-img pr-4" href="{% url 'view-event' event.pk %}">
+              <img src="{{ event.image.url }}" alt="image" style="background-color: #34495f;padding-bottom: 10px;" width="120"/>
+            </a>
+            <div class="media-body d-flex">
+              <div class="flex-1">
+                <h5 class="media-heading">
+                  <a href="{% url 'view-event' event.pk %}">{{ event.title }}</a>
+                </h5>
+                <p class="font-13 text-light">{{ event.description }}</p>
+                <div class="font-13">
+                  <span class="mr-4">
+                    <span class="text-success" style="padding-right:10px;">
+		      {{ event.start_date|date:"d M Y" }} - {{ event.end_date|date:"d M Y" }}
+                    </span>
+                    <span class="text-muted mr-4">{{ event.location }}</span>
+                  </span>
+		</div>
+              </div>
+            </div>
+          </li>
+	  {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
