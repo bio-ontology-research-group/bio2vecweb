@@ -96,6 +96,7 @@ class SearchEntitiesAPIView(APIView):
         }
         dataset = Dataset.objects.filter(name=dataset_name)
         if dataset.exists():
+            dataset = dataset.get()
             index_url = ELASTICSEARCH_URL + dataset.index_name
         else:
             index_url = ELASTICSEARCH_URL + 'dataset_*'

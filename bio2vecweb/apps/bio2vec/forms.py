@@ -122,7 +122,8 @@ class DistributionForm(forms.ModelForm):
             c += 1
             if c == 10:
                 break
-        self.instance.indexed = False
+        self.instance.dataset.indexed = False
+        self.instance.dataset.save()
         self.instance.embedding_size = embedding_size
         return embeddings_file
 
@@ -141,6 +142,6 @@ class DistributionForm(forms.ModelForm):
             self.instance.modified_by = self.request.user
             self.instance.date_modified = timezone.now()
         self.instance.save()
-        if not self.instance.indexed:
+        if not self.instance.dataset.indexed:
             index_dataset.delay(self.dataset.pk)
         return self.instance

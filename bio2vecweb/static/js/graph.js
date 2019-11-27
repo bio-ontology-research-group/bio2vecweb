@@ -15,7 +15,7 @@ $(document).ready(function() {
 		    console.log(data);
                     if (data.status == 'ok') {
 			response($.map(data.result, function(item) {
-			    var dataset_id = item['_type'].split('_')[1];
+			    var dataset_id = item['_index'].split('_')[1];
 			    var data = item['_source'];
 			    return {
 				label: data['label'],
