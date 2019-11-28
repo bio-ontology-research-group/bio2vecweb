@@ -122,8 +122,8 @@ class DistributionForm(forms.ModelForm):
             c += 1
             if c == 10:
                 break
-        self.instance.dataset.indexed = False
-        self.instance.dataset.save()
+        self.dataset.indexed = False
+        self.dataset.save()
         self.instance.embedding_size = embedding_size
         return embeddings_file
 
