@@ -10,6 +10,7 @@ import os
 import gzip
 import requests
 from MulticoreTSNE import MulticoreTSNE as TSNE
+from bio2vec.fast_tsne import fast_tsne
 import numpy as np
 
 
@@ -75,7 +76,10 @@ def index_dataset(dataset_id):
             'embedding': embed
         }
         data.append(doc)
-    res = TSNE(n_jobs=TSNE_JOBS).fit_transform(np.hstack(embeds).reshape(-1, dims))
+    embeds = np.hstack(embeds).reshape(-1, dims)
+    #res = TSNE(n_jobs=TSNE_JOBS).fit_transform(embeds)
+    
+    res = fast_tsne(embeds, input_file=filepath + '.in', out_file=filepath + '.out')
     for i, doc in enumerate(data):
         doc['x'] = res[i, 0]
         doc['y'] = res[i, 1]
