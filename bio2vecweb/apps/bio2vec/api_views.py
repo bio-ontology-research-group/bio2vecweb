@@ -49,7 +49,7 @@ class MostSimilarAPIView(APIView):
                                 "match_all": {}
                             },
                             "script": {
-                                "source": "cosineSimilarity(params.vector, doc['embedding'])",
+                                "source": "cosineSimilarity(params.vector, doc['embedding']) + 1",
                                 "params": {
                                     "vector": vector,
                                 }
