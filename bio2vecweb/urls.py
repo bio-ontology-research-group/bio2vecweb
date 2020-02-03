@@ -38,4 +38,5 @@ urlpatterns = [
          TemplateView.as_view(template_name='contacts.html'),
          name='contacts'),
     path('healthcheck', TemplateView.as_view(template_name='health.html')),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    path('openapi/', TemplateView.as_view(template_name="index.html")),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL)

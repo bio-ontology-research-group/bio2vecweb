@@ -1,0 +1,191 @@
+openapi: 3.0.1
+info:
+  title: Bio2Vec
+  description: |
+    Bio2Vec is a platform that enables the development of machine learning and data analytics methods to be applied on biological  Big Data, with the aim of discovering molecular mechanisms underlying complex diseases and drugs' mode of action.
+  contact:
+    email: test@example.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2-0.html
+  version: 1.0.0
+server:
+  url: http://bio2vec.net
+externalDocs:
+  description: Find out more about DRF Tutorial.
+  url: https://www.django-rest-framework.org/tutorial/1-serialization/
+paths:
+  /api/bio2vec/mostsimilar:
+    get:
+      summary: Return a List of similar vectors of biomedical entities.
+      operationId: api-bio2vec-mostsimilar
+      parameters:
+        - in: query
+          name: id
+          description: list of IDs
+          required: true
+          style: form
+          schema:
+            type: integer
+        - in: query
+          name: dataset
+          description: dataset name
+          required: true
+          style: form
+          schema:
+            type: string
+        - in: query
+          name: size
+          description: size of list to be returned
+          required: false
+          style: form
+          schema:
+            type: integer
+        - in: query
+          name: offset
+          description: the number of items to skip before starting to collect the result style
+          required: false
+          schema:
+            type: integer
+      responses:
+        200:
+          description: A JSON dictionary of similar vectors of biomedical entities
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bio2VecMostSimilar'    
+  /api/bio2vec/search:
+    get:
+      summary: Return a list of entities
+      operationId: api-bio2vec-search
+      parameters:
+        - in: query
+          name: label
+          description: term of or phrase that contains name of entitiy
+          required: true
+          style: form
+          schema:
+            style: string
+        - in: query
+          name: dataset
+          description: name of specified dataset
+          required: false
+          style: form
+          schema:
+            type: string
+        - in: query
+          name: size
+          description: size of list to be returned
+          required: false
+          style: form
+          schema:
+            type: integer
+        - in: query
+          name: offset
+          description: the number of items to skip before starting to collect the result style
+          required: false
+          schema:
+            type: integer
+
+      responses:
+        '200':
+          description: A list of searched entities
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bio2VecSearchEntities'
+  /api/bio2vec/entities:
+    get:
+      summary: Return a list of querie
+      operationId: api-bio2vec-entities
+      parameters:
+        - in: query
+          name: iri
+          description: term of or phrase that contains name of entitiy
+          required: true
+          style: form
+          schema:
+            style: string
+        - in: query
+          name: dataset
+          description: name of specified dataset
+          required: true
+          style: form
+          schema:
+            type: string
+        - in: query
+          name: size
+          description: size of list to be returned
+          required: false
+          style: form
+          schema:
+            type: integer
+        - in: query
+          name: offset
+          description: the number of items to skip before starting to collect the result style
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: A list of entities
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bio2VecEntities'
+
+components:
+  schemas:
+    Bio2VecMostSimilar:
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          format: uri
+        previous:
+          type: string
+          format: uri
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Bio2VecMostSimilar'
+    Bio2VecSearchEntities:
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          format: uri
+        previous:
+          type: string
+          format: uri
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Bio2VecSearchEntities'
+    Bio2VecEntities:
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          format: uri
+        previous:
+          type: string
+          format: uri
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Bio2VecEntities'
+
+  responses:
+    '400':
+      description: A request has not been formulated correctly and the server cannot respond successfully.
+      headers:
+        X-Request-Id:
+          description: 'An optional id which identifies the request'
+          schema:
+            type: string
+            format: uuid
+          required: false
