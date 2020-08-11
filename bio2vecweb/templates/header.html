@@ -33,13 +33,15 @@
             <a class="link" href="{% url 'list-events' %}"> <span class="brand">Events</span>
             </a>
           </li>
-          <li>
-            <a class="link" href="{% url 'about' %}"> <span class="brand">About</span>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" type="button" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+               <span class="brand">Documentation</span><i class="fa fa-caret-down pl-2"></i>
             </a>
-          </li>
-	  <li>
-            <a class="link" href="{% url 'contacts' %}"> <span class="brand">Contact Us</span>
-            </a>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+              <a class="dropdown-item" href="{% url "about" %}">About</a>
+              <a class="dropdown-item" href="{% url "upload_ds_doc" %}">How to Upload a Dataset</a> 
+              <a class="dropdown-item" href="{% url "contacts" %}">Contact Us</a>
+            </div>
           </li>
 	</ul>
 	  {% if user.is_authenticated %}

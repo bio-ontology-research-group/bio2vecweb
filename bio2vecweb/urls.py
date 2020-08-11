@@ -37,6 +37,8 @@ urlpatterns = [
     path('contacts',
          TemplateView.as_view(template_name='contacts.html'),
          name='contacts'),
+    path('upload_ds_doc',
+         TemplateView.as_view(template_name='upload_ds_doc.html'), name='upload_ds_doc'),
     path('healthcheck', TemplateView.as_view(template_name='health.html')),
     path('openapi/', TemplateView.as_view(template_name="index.html")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL)

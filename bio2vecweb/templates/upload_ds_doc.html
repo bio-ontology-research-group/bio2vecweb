@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-6 col-md-offset-3">
+    <h3>Uploading a Dataset</h3>
+  </div>
+</div>
+<div class="row p-3">
+  <ol>
+    <li>To upload a dataset, You need to Sign In to Bio2vec application.</li>
+    <li>Click on the Account menu button on top left and select My Datasets option.</li>
+    <li> It will display the list of Datasets uploaded by the user.</li>
+    <li>Click on Create Dataset Button. It will display the Create Dataset Form.</li>
+    <li>Creating a dataset is a two step process including filling the fields describing the dataset and uploading the dataset file.</li>
+    <li>Dataset Description fields are following:</li>
+    <table class="table table-bordered m-3">
+      <thead>
+        <tr>
+          <th scope="col">Field Name</th>
+          <th scope="col">Required</th>
+          <th scope="col">Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Name</td>
+          <td>required</td>
+          <td>Name of the dataset</td>
+        </tr>
+        <tr>
+          <td>Description</td>
+          <td>optional</td>
+          <td>Describe the dataset. What features are encoded?</td>
+        </tr>
+        <tr>
+          <td>Measurement Technique</td>
+          <td>optional</td>
+          <td>What kind of method was used to generate embeddings?</td>
+        </tr>
+        <tr>
+          <td>Original Dataset</td>
+          <td>optional</td>
+          <td>Link to the original dataset</td>
+        </tr>
+        <tr>
+          <td>Original Description</td>
+          <td>optional</td>
+          <td>Provide small description of the original dataset</td>
+        </tr>
+        <tr>
+          <td>Evaluated In</td>
+          <td>optional</td>
+          <td>An Experiment in which the embeddings are evaluated. URL to OpenML.</td>
+        </tr>
+        <tr>
+          <td>Creators</td>
+          <td>optional</td>
+          <td>url/orcid/text separated by commas</td>
+        </tr>
+        <tr>
+          <td>Contributors</td>
+          <td>optional</td>
+          <td>url/orcid/text separated by commas</td>
+        </tr>
+        <tr>
+          <td>Publisher</td>
+          <td>optional</td>
+          <td>URL</td>
+        </tr>
+        <tr>
+          <td>Keywords</td>
+          <td>optional</td>
+          <td>Types of entities used in the dataset</td>
+        </tr>
+        <tr>
+          <td>Citation</td>
+          <td>optional</td>
+          <td>A published reference for the publication</td>
+        </tr>
+      </tbody>
+    </table>
+    <li>Fill the description fields and click on Create button.</li>
+    <li>Once the dataset is created, the dataset upload form will be displayed.</li>
+    <li>Fill the following fields and Click on the Save button to upload the selected dataset file.</li>
+    <table class="table table-bordered m-3">
+    <thead>
+      <tr>
+        <th scope="col">Field Name</th>
+        <th scope="col">Required</th>
+        <th scope="col">Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Version</td>
+        <td>required</td>
+        <td>Fill the field in format: major.minor.patch</td>
+      </tr>
+      <tr>
+        <td>Embeddings file</td>
+        <td>required</td>
+        <td>uploads the embeddings file in formats including *.tsv or *.tsv.gz. Description of the embedding file is given in below Embedding File Format section.</td>
+      </tr>
+      <tr>
+        <td>License</td>
+        <td>required</td>
+        <td>Select the license from given license types </td>
+      </tr>
+    </tbody>
+    </table>
+  </ol>
+</div>
+<div class="row">
+  <div class="col-md-6 col-md-offset-3">
+    <h3>Embeddings File Format</h3>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12 col-md-offset-3">
+    <p>Machine learning models output embeddings file in variety of formats and supporting all the formats may not be fesible. Therefore we
+    have created a common format for uploading the embeddings file. Here is the discription of the format:</p>
+  </div>
+</div>
+<div class="row p-3">
+  <table class="table table-bordered m-3">
+    <thead>
+      <tr>
+        <th scope="col">Field Name</th>
+        <th scope="col">Required</th>
+        <th scope="col">Description</th>
+        <th scope="col">Example</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Entity ID</td>
+        <td>required</td>
+        <td>Identifier for the entity or object for which the vector is computed</td>
+        <td>http://purl.obolibrary.org/obo/HP_0410289</td>
+      </tr>
+      <tr>
+        <td>Label</td>
+        <td>optional</td>
+        <td>Display label for the entity. It is an optional field, however including labels in the source file will allow user to search entities using specified label through bio2Vec dataset browser</td>
+        <td>Hypoamylasemia</td>
+      </tr>
+      <tr>
+        <td>Alternative IDs</td>
+        <td>optional</td>
+        <td>Alternate IDs of the entity or term if any</td>
+        <td>obo:HP_0410289 (“,”-separated list)</td>
+      </tr>
+      <tr>
+        <td>Synonyms</td>
+        <td>optional</td>
+        <td>Synonyms for the entity or term</td>
+        <td>Decreased circulating amylase level (“,”-separated list)</td>
+      </tr>
+      <tr>
+        <td>Type</td>
+        <td>optional</td>
+        <td>Type of the entity or term. Adding type information could be very useful as Bio2vec utilize this information to display more meaningful visualization of entities and also allows user to search similar entities based on their types through SPARQL queries</td>
+        <td>http://phenomebrowser.net/Phenotype</td>
+      </tr>
+      <tr>
+        <td>Vector Elements</td>
+        <td>required</td>
+        <td>List of comma-separated computed vector coordinates or elements</td>
+        <td>0.2888383,-0.38942948,-0.09588139,-0.1310513 (“,”-separated list)</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+{% endblock %}
