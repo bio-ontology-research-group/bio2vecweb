@@ -29,7 +29,7 @@ else :
         sniff_on_connection_fail=True,
         sniffer_timeout=60)
 if es: 
-  logger.info("Connected to elasticesearch server")
+  logger.info("Connected to elasticesearch server: %s", str(es))
 
 def create(index, index_settings):
   try:
