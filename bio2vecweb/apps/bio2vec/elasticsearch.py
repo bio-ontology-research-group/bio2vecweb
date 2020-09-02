@@ -70,7 +70,7 @@ def index(index, id, document):
 
 def execute_query(index, query):
   try:
-    logger.info("running query:%s", query)
+    logger.debug("running query:%s", query)
     return es.search(index=index, body=query)
   except Exception as e:
       logger.exception("message")

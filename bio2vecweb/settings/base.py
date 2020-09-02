@@ -131,8 +131,11 @@ DATABASES = {
 # Memcached
 CACHES = {
     'default': {
-        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': '127.0.0.1:11211',
+        # 'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        # 'LOCATION': '127.0.0.1:11211',
+
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': '/tmp/django_cache',
     }
 }
 
@@ -272,7 +275,6 @@ LOGGING = {
         },
         'handlers': {
             'file': {
-                'level': 'DEBUG',
                 'class': 'logging.FileHandler',
                 'filename': 'bio2vec.log',
                 'formatter': 'file'
@@ -285,12 +287,12 @@ LOGGING = {
         'loggers': {
             'django': {
                 'handlers': ['file'],
-                'level': 'DEBUG',
+                'level': 'INFO',
                 'propagate': True,
             },
             'bio2vecweb': {
                 'handlers': ['file', 'console'],
-                'level': 'DEBUG',
+                'level': 'INFO',
                 'propagate': True,
             }
         },
