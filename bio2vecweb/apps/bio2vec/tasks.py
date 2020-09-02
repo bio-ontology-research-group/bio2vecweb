@@ -9,24 +9,25 @@ from bio2vec.models import Dataset
 import os
 import gzip
 import requests
+import logging
 from MulticoreTSNE import MulticoreTSNE as TSNE
 from bio2vec.fast_tsne import fast_tsne
+from bio2vecweb.apps.bio2vec.elasticsearch import create, delete, index
 import numpy as np
 
-
-ELASTICSEARCH_URL = getattr(
-    settings, 'ELASTICSEARCH_URL', 'http://localhost:9200/')
 TSNE_JOBS = getattr(
     settings, 'TSNE_JOBS', 8)
 
+logger = logging.getLogger(__name__)
 
+def configure_index(index_name, dims):
+    # r = requests.head(index_name)
+    # if r.status_code != 404:
+    #     requests.delete(index_name)
+    logger.info("creating index:%s", index_name)
+    delete(index_name)
 
-def configure_index(index_url, dims):
-    r = requests.head(index_url)
-    if r.status_code != 404:
-        requests.delete(index_url)
-
-    mapping = {
+    index_settings = {
         "mappings" : {
             "properties" : {
                 "embedding": {
@@ -39,20 +40,20 @@ def configure_index(index_url, dims):
                 "synonyms": {"type": "keyword"},
                 "type": {"type": "keyword"}
             }
-        }
+        },
+        "settings": settings.ELASTICSEARCH_INDEX_SETTING
     }
-    r = requests.put(index_url, json=mapping)
-    print(r.json())
-
+    # r = requests.put(index_name, json=mapping)
+    create(index_name, index_settings)
 
 @task
 def index_dataset(dataset_id):
     dataset = Dataset.objects.get(pk=dataset_id)
     distrib = dataset.get_latest_dist()
     filepath = distrib.embeddings_file.path
-    index_url = ELASTICSEARCH_URL + dataset.index_name
+    index_name = settings.ELASTICSEARCH_INDEX_PREFIX + dataset.index_name
     dims = distrib.embedding_size
-    configure_index(index_url, dims)
+    configure_index(index_name, dims)
     
     _, ext = os.path.splitext(filepath)
     if ext == '.gz':
@@ -78,13 +79,11 @@ def index_dataset(dataset_id):
         data.append(doc)
     embeds = np.hstack(embeds).reshape(-1, dims)
     #res = TSNE(n_jobs=TSNE_JOBS).fit_transform(embeds)
-    
     res = fast_tsne(embeds, input_file=filepath + '.in', out_file=filepath + '.out')
     for i, doc in enumerate(data):
         doc['x'] = res[i, 0]
         doc['y'] = res[i, 1]
-        r = requests.put(
-            index_url + '/_doc/' + str(i), json=doc)
+        index(index_name, i, doc)
     
     dataset.indexed = True
     dataset.save()

@@ -12,9 +12,22 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 
 import os
 import sys
+import shutil, configparser
 
 from kombu import Queue, Exchange
 from django.contrib import messages
+from os.path import join
+
+# Reading setup properties from configuration file
+config_dir = os.path.expanduser("~") + "/.config"
+configFile = config_dir + "/bio2vec.ini"
+
+if not os.path.isfile(configFile):
+    os.makedirs(config_dir, exist_ok=True)
+    shutil.copyfile("default_bio2vec.ini", configFile)
+
+config = configparser.RawConfigParser()
+config.read(configFile)
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -237,5 +250,48 @@ MESSAGE_TAGS = {
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_URLS_REGEX = r'^/api/.*$'
 
-ELASTICSEARCH_URL = 'http://localhost:9200/'
+ELASTICSEARCH_URL = config['elasticsearch']['url']
+ELASTICSEARCH_USERNAME = config['elasticsearch']['username']
+ELASTICSEARCH_PASSWORD = config['elasticsearch']['password']
+ELASTICSEARCH_INDEX_PREFIX = config['elasticsearch']['index.prefix']
+ELASTICSEARCH_INDEX_SETTING = { "number_of_shards": "3", "number_of_replicas": 1 }
+
+
 BIO2VEC_API_URL = 'http://localhost:8000/api/bio2vec'
+
+LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'formatters': {
+            'console': {
+                'format': '%(asctime)s %(name)-12s %(levelname)-2s %(message)s'
+            },
+            'file': {
+                'format': '%(asctime)s %(name)-12s %(levelname)-8s %(message)s'
+            }
+        },
+        'handlers': {
+            'file': {
+                'level': 'DEBUG',
+                'class': 'logging.FileHandler',
+                'filename': 'bio2vec.log',
+                'formatter': 'file'
+            },
+            'console': {
+                'class': 'logging.StreamHandler',
+                'formatter': 'console'
+            }
+        },
+        'loggers': {
+            'django': {
+                'handlers': ['file'],
+                'level': 'DEBUG',
+                'propagate': True,
+            },
+            'bio2vecweb': {
+                'handlers': ['file', 'console'],
+                'level': 'DEBUG',
+                'propagate': True,
+            }
+        },
+    }

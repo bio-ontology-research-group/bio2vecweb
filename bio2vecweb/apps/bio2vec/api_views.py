@@ -7,9 +7,7 @@ import itertools
 from django.conf import settings
 from collections import defaultdict
 from bio2vec.models import Dataset
-
-ELASTICSEARCH_URL = getattr(
-    settings, 'ELASTICSEARCH_URL', 'http://localhost:9200/')
+from bio2vecweb.apps.bio2vec.elasticsearch import execute_query
 
 
 class MostSimilarAPIView(APIView):
@@ -29,14 +27,10 @@ class MostSimilarAPIView(APIView):
             }
         }
         result = {}
-        index_url = ELASTICSEARCH_URL + dataset.index_name
         try:
-            r = requests.post(
-                index_url + '/_search', json=query)
-            if r.status_code != 200:
-                return Response(
-                    {'status': 'error', 'message': 'Index query error'})
-            hits = r.json()['hits']['hits']
+            index_name = settings.ELASTICSEARCH_INDEX_PREFIX + dataset.index_name
+            r = execute_query(index_name, query)
+            hits = r['hits']['hits']
             for item in hits:
                 item = item['_source']
                 result[item['id']] = []
@@ -60,14 +54,13 @@ class MostSimilarAPIView(APIView):
                     "size": size
                 }
                     
-                r = requests.post(index_url + '/_search', json=query)
-                if r.status_code != 200:
-                    return Response(
-                        {'status': 'error', 'message': 'Index query error'})
-                entities = r.json()['hits']['hits']
+                r = execute_query(index_name, query)
+                entities = r['hits']['hits']
                 result[item['id']] = entities
         except Exception as e:
+            return Response({'status': 'error', 'message': str(e)})
             print(e)
+
         return Response({'status': 'ok', 'result': result})
 
 
@@ -97,22 +90,17 @@ class SearchEntitiesAPIView(APIView):
         dataset = Dataset.objects.filter(name=dataset_name)
         if dataset.exists():
             dataset = dataset.get()
-            index_url = ELASTICSEARCH_URL + dataset.index_name
+            index = settings.ELASTICSEARCH_INDEX_PREFIX + dataset.index_name
         else:
-            index_url = ELASTICSEARCH_URL + 'dataset_*'
+            index = settings.ELASTICSEARCH_INDEX_PREFIX + 'dataset_*'
         result = []
         try:
-            r = requests.post(index_url + '/_search', json=query)
-            if r.status_code != 200:
-                return Response(
-                    {'status': 'error', 'message': 'Index query error'})
-            hits = r.json()['hits']['hits']
-            result = hits
+            r = execute_query(index, query)
+            result = r['hits']['hits']
         except Exception as e:
             print(e)
             return Response(
                 {'status': 'exception', 'message': str(e)})
-            
 
         return Response({'status': 'ok', 'result': result})
 
@@ -150,14 +138,10 @@ class EntitiesAPIView(APIView):
             query['query'] = {'match_all': {}}
         
         result = []
-        index_url = ELASTICSEARCH_URL + dataset.index_name
         try:
-            r = requests.post(index_url + '/_search', json=query)
-            if r.status_code != 200:
-                return Response(
-                    {'status': 'error', 'message': 'Index query error'})
-            hits = r.json()['hits']['hits']
-            result = hits
+            index_name = settings.ELASTICSEARCH_INDEX_PREFIX + dataset.index_name
+            r = execute_query(index_name, query)
+            result = r['hits']['hits']
         except Exception as e:
             return Response(
                 {'status': 'exception', 'message': str(e)})
