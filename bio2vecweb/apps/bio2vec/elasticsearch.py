@@ -10,30 +10,25 @@ from requests.auth import HTTPDigestAuth
 logger = logging.getLogger(__name__)
 
 es = None
+esUrl = settings.ELASTICSEARCH_URL.split(",")
+use_ssl = False 
 
-def init():
-  global es
+if 'https' in esUrl[0]:
+  use_ssl = True
 
-  esUrl = settings.ELASTICSEARCH_URL.split(",")
-  use_ssl = False 
+http_auth = None
+if settings.ELASTICSEARCH_USERNAME and settings.ELASTICSEARCH_PASSWORD:
+  http_auth=(settings.ELASTICSEARCH_USERNAME, settings.ELASTICSEARCH_PASSWORD)
 
-  if 'https' in esUrl[0]:
-    use_ssl = True
-
-  http_auth = None
-  if settings.ELASTICSEARCH_USERNAME and settings.ELASTICSEARCH_PASSWORD:
-    http_auth=(settings.ELASTICSEARCH_USERNAME, settings.ELASTICSEARCH_PASSWORD)
-
-  if not es:
-    es = Elasticsearch(esUrl, http_auth=http_auth,
-          use_ssl=use_ssl,
-          sniff_on_start=True,
-          sniff_on_connection_fail=True,
-          sniffer_timeout=60)
-    logger.info("Connected to elasticesearch server: %s", str(es))
+if not es:
+  es = Elasticsearch(esUrl, http_auth=http_auth,
+        use_ssl=use_ssl,
+        sniff_on_start=True,
+        sniff_on_connection_fail=True,
+        sniffer_timeout=60)
+  logger.info("Connected to elasticesearch server: %s", str(es))
 
 def create(index, index_settings):
-  global es
   try:
     es.indices.create(index=index, body=index_settings, ignore=400)
     logger.info("Index created '%s'", index)
@@ -41,7 +36,6 @@ def create(index, index_settings):
       logger.exception("message")
 
 def delete(index):
-  global es
   try:
     es.indices.delete(index=index, ignore=[400, 404])
     logger.info("Index deleted '%s'", index)
@@ -49,7 +43,6 @@ def delete(index):
       logger.exception("message")
 
 def index(index, id, document):
-  global es
   try:
     result = es.index(index=index, id=id, body=document)
     if result["result"] == "created":
@@ -73,16 +66,8 @@ def index(index, id, document):
 #     logger.exception("message")
 
 def execute_query(index, query):
-  global es
   try:
     logger.debug("running query:%s", query)
     return es.search(index=index, body=query, request_timeout=60)
   except Exception as e:
       logger.exception("message")
-
-
-
-  
-
-
-

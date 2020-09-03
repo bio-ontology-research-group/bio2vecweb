@@ -1,1 +1,0 @@
-default_app_config = 'bio2vecweb.apps.bio2vec.bio2vec_config.Bio2vecConfig'
