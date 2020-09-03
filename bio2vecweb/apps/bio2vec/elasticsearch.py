@@ -73,6 +73,7 @@ def index(index, id, document):
 #     logger.exception("message")
 
 def execute_query(index, query):
+  global es
   try:
     logger.debug("running query:%s", query)
     return es.search(index=index, body=query, request_timeout=60)
