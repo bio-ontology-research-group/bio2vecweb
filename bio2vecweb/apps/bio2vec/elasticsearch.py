@@ -10,26 +10,27 @@ from requests.auth import HTTPDigestAuth
 logger = logging.getLogger(__name__)
 
 es = None
-esUrl = settings.ELASTICSEARCH_URL.split(",")
-use_ssl = False 
 
-if 'https' in esUrl[0]:
-  use_ssl = True
+def init():
+  global es
 
-if settings.ELASTICSEARCH_USERNAME and settings.ELASTICSEARCH_PASSWORD:
-  es = Elasticsearch(esUrl, http_auth=(settings.ELASTICSEARCH_USERNAME, settings.ELASTICSEARCH_PASSWORD),
-        use_ssl=use_ssl,
-        sniff_on_start=True,
-        sniff_on_connection_fail=True,
-        sniffer_timeout=60)
-else :
-  es = Elasticsearch(esUrl,
-        use_ssl=use_ssl,
-        sniff_on_start=True,
-        sniff_on_connection_fail=True,
-        sniffer_timeout=60)
-if es: 
-  logger.info("Connected to elasticesearch server: %s", str(es))
+  esUrl = settings.ELASTICSEARCH_URL.split(",")
+  use_ssl = False 
+
+  if 'https' in esUrl[0]:
+    use_ssl = True
+
+  http_auth = None
+  if settings.ELASTICSEARCH_USERNAME and settings.ELASTICSEARCH_PASSWORD:
+    http_auth=(settings.ELASTICSEARCH_USERNAME, settings.ELASTICSEARCH_PASSWORD)
+    
+  if not es:
+    es = Elasticsearch(esUrl, http_auth=http_auth,
+          use_ssl=use_ssl,
+          sniff_on_start=True,
+          sniff_on_connection_fail=True,
+          sniffer_timeout=60)
+    logger.info("Connected to elasticesearch server: %s", str(es))
 
 def create(index, index_settings):
   try:
@@ -71,7 +72,7 @@ def index(index, id, document):
 def execute_query(index, query):
   try:
     logger.debug("running query:%s", query)
-    return es.search(index=index, body=query)
+    return es.search(index=index, body=query, request_timeout=60)
   except Exception as e:
       logger.exception("message")
 
