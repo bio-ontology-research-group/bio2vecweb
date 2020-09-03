@@ -23,7 +23,7 @@ def init():
   http_auth = None
   if settings.ELASTICSEARCH_USERNAME and settings.ELASTICSEARCH_PASSWORD:
     http_auth=(settings.ELASTICSEARCH_USERNAME, settings.ELASTICSEARCH_PASSWORD)
-    
+
   if not es:
     es = Elasticsearch(esUrl, http_auth=http_auth,
           use_ssl=use_ssl,
@@ -33,6 +33,7 @@ def init():
     logger.info("Connected to elasticesearch server: %s", str(es))
 
 def create(index, index_settings):
+  global es
   try:
     es.indices.create(index=index, body=index_settings, ignore=400)
     logger.info("Index created '%s'", index)
@@ -40,6 +41,7 @@ def create(index, index_settings):
       logger.exception("message")
 
 def delete(index):
+  global es
   try:
     es.indices.delete(index=index, ignore=[400, 404])
     logger.info("Index deleted '%s'", index)
@@ -47,6 +49,7 @@ def delete(index):
       logger.exception("message")
 
 def index(index, id, document):
+  global es
   try:
     result = es.index(index=index, id=id, body=document)
     if result["result"] == "created":
